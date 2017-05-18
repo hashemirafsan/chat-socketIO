@@ -1,7 +1,7 @@
 {
   "name": "chat",
   "version": "1.0.0",
-  "description": "A simple socket.io and vue js chat application",
+  "description": "main component for building our apps",
   "main": "index.js",
   "engines": {
     "node": "6.9.1"
@@ -9,8 +9,16 @@
   "scripts": {
     "start": "node index.js"
   },
-  "author": "Hashemi Rafsan, HB shifat",
-  "license": "ISC",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/hashemirafsan/main-compo.git"
+  },
+  "author": "Hashemi Rafsan",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/hashemirafsan/main-compo/issues"
+  },
+  "homepage": "https://github.com/hashemirafsan/main-compo#readme",
   "dependencies": {
     "express": "^4.15.2",
     "socket.io": "^2.0.1",
