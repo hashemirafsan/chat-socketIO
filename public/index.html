@@ -90,7 +90,6 @@
         },
       methods: {
         sendmessge: function(){
-          this.total_message.push(this.messages);
           socket.emit('msg_to_admin', this.messages,this.id);
           socket.emit('self', this.messages,this.id);
           this.messages = ''
@@ -110,7 +109,7 @@
     })
 
     socket.on('msg_from_admin', function(msg,id) {
-      if(app.id !== id) {
+      if(app.id == id) {
         app.total_message.push(msg)
         var aud = new Audio('/your-turn.ogg')
         aud.play();
