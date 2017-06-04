@@ -5,23 +5,48 @@ var io = require('socket.io')(http);
 
 app.use(express.static(__dirname + '/public'));
 
+
 app.get('/', (req,res) => {
 	res.sendFile('index.html');
 })
 
-io.on('connection', (socket) => {
+app.get('/admin', (req,res) => {
+  res.sendFile(__dirname+'/public/admin.html');
+});
 
-	socket.on('disconnect', () => {
-    	console.log('user disconnected');
+let total_user = 0;
+
+io.on('connection', (socket) => {
+  io.emit('say_hello', "Hello How are you?");
+  total_user++;
+
+  io.emit('total_user', total_user)
+  console.log(total_user);
+
+	 socket.on('disconnect', () => {
+      io.emit('total_user', total_user--);
+    	console.log(total_user);
   	});
 
-  	socket.on('chat', (msg,id) => {
-  		io.emit('chat', msg,id);
+  	socket.on('self', (msg,id) => {
+      io.emit(id, msg, id);
   	})
+
+    socket.on('msg_to_admin', (msg,id) => {
+      io.emit('admin', msg,id);
+    })
+
+    socket.on('msg_to_client', (msg,id) => {
+      io.emit('msg_from_admin', msg,id);
+    })
 
   	socket.on('typing', (msg,id) => {
   		io.emit('typing', msg,id);
   	})
+
+    socket.on('client_id_to_admin', (id) => {
+      io.emit('admin_array_client', id);
+    })
 }) 
 
 http.listen(process.env.PORT || 3000, () => {

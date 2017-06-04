@@ -7,9 +7,12 @@
    <link rel="stylesheet" href="/app.css">
   </head>
   <body>
+
     <div class="container" id="app">
     <div class="row chat-window col-xs-11 col-md-3" id="chat_window_1" style="margin-left:10px;">
-        <div class="col-xs-12 col-md-12">
+      <h2>Total user {{total}}</h2>
+
+        <div class="col-xs-12 col-md-12" v-for="item in client">
           <div class="panel panel-default">
                 <div class="panel-heading top-bar">
                     <div class="col-md-8 col-xs-12">
@@ -28,7 +31,7 @@
                         </div>
                         <div class="col-md-10 col-xs-12">
                             <div class="messages msg_sent">
-                                <p>{{items}}</p>
+                                <p v-show="item == items.id">{{items.msg}}</p>
                                 <time datetime="2009-11-13T20:00">Timothy • 51 min</time>
                             </div>
                         </div>
@@ -41,9 +44,9 @@
 
                 <div class="panel-footer">
                     <div class="input-group">
-                        <input id="btn-input" type="text" class="form-control input-sm chat_input" placeholder="Write your message here..." v-model="messages" @keyup="someone" @keyup.enter="sendmessge"/>
+                        <input id="btn-input" type="text" class="form-control input-sm chat_input" placeholder="Write your message here..." v-model="messages" @keyup="someone" @keyup.enter="sendmessge(item)"/>
                         <span class="input-group-btn">
-                        <button class="btn btn-primary btn-sm" id="btn-chat" @click="sendmessge">Send</button>
+                        <button class="btn btn-primary btn-sm" id="btn-chat" @click="sendmessge(item)">Send</button>
                         </span>
                     </div>
                 </div>
@@ -85,13 +88,14 @@
           typing: false,
           id: Date.now(),
           who: '',
-          total_user: '',
-          hello:''
+          client: [],
+          total: 0
         },
       methods: {
-        sendmessge: function(){
+        sendmessge: function(clientid){
+          console.log(clientid)
           this.total_message.push(this.messages);
-          socket.emit('msg_to_admin', this.messages,this.id);
+          socket.emit('msg_to_client', this.messages,clientid);
           socket.emit('self', this.messages,this.id);
           this.messages = ''
           socket.emit('typing', false, this.id)
@@ -103,18 +107,25 @@
         }
       },
     });
-    socket.on(app.id, function(msg,id) {
-        app.total_message.push(msg)
+
+    socket.on(app.client, function(msg,id) {
+        let data = {
+          msg: msg,
+          id: id
+        }
+        app.total_message.push(data)
         var aud = new Audio('/your-turn.ogg')
         aud.play();
     })
 
-    socket.on('msg_from_admin', function(msg,id) {
-      if(app.id !== id) {
-        app.total_message.push(msg)
+    socket.on('admin', function(msg,id) {
+        let data = {
+          msg: msg,
+          id: id
+        }
+        app.total_message.push(data)
         var aud = new Audio('/your-turn.ogg')
         aud.play();
-      }
     })
 
     socket.on('typing', function(msg,id) {
@@ -124,15 +135,14 @@
       }
     })
 
-    socket.on('say_hello', function(msg){
-      if(app.hello.length == 0) {
-        app.hello = msg;
-        app.total_message.push(msg);
-        socket.emit('client_id_to_admin', app.id);
-      } 
-    });
 
+    socket.on('total_user', function(param) {
+      app.total = param;
+    })
 
+    socket.on('admin_array_client', function(id) {
+      app.client.push(id);
+    })
   </script>
 
 </html>
