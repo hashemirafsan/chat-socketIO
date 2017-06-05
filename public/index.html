@@ -8,7 +8,11 @@
   </head>
   <body>
     <div class="container" id="app">
-    <div class="row chat-window col-xs-11 col-md-3" id="chat_window_1" style="margin-left:10px;">
+    <div v-if="!name">
+      <label for="name">Set Your Name</label>
+      <input type="text" v-model="another" id="name" @keyup.enter="setName">
+    </div>
+    <div class="row chat-window col-xs-11 col-md-3" id="chat_window_1" style="margin-left:10px;" v-if="name">
         <div class="col-xs-12 col-md-12">
           <div class="panel panel-default">
                 <div class="panel-heading top-bar">
@@ -86,7 +90,9 @@
           id: Date.now(),
           who: '',
           total_user: '',
-          hello:''
+          hello:'',
+          name: '',
+          another: ''
         },
       methods: {
         sendmessge: function(){
@@ -95,7 +101,10 @@
           this.messages = ''
           socket.emit('typing', false, this.id)
         },
-
+        setName: function() {
+          this.name = this.another
+          socket.emit('client_id_to_admin', this.id, this.name);
+        },
         someone: function() {
           console.log(this.id)
           socket.emit('typing', true, this.id)
@@ -127,7 +136,6 @@
       if(app.hello.length == 0) {
         app.hello = msg;
         app.total_message.push(msg);
-        socket.emit('client_id_to_admin', app.id);
       } 
     });
 

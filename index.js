@@ -32,8 +32,12 @@ io.on('connection', (socket) => {
       io.emit(id, msg, id);
   	})
 
+    socket.on('admin_self', (msg,id) => {
+      io.emit('admin_self', msg, id);
+    })
+
     socket.on('msg_to_admin', (msg,id) => {
-      io.emit('admin', msg,id);
+      io.emit('msg_to_admin', msg,id);
     })
 
     socket.on('msg_to_client', (msg,id) => {
@@ -44,8 +48,8 @@ io.on('connection', (socket) => {
   		io.emit('typing', msg,id);
   	})
 
-    socket.on('client_id_to_admin', (id) => {
-      io.emit('admin_array_client', id);
+    socket.on('client_id_to_admin', (id,name) => {
+      io.emit('admin_array_client', id,name);
     })
 }) 
 
